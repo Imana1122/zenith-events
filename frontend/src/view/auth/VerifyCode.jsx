@@ -220,7 +220,7 @@ export default function VerifyCode() {
                 <PrimaryButton disabled={processing}> {processing ? 'Sending Code' : 'Send Code'} </PrimaryButton>
 
 
-            <div className='border-red-700 border-2 rounded-full px-2 py-1'>
+            <div className='border-red-700 border-2 rounded-full px-1'>
             {seconds >= 0 && <p>{seconds}</p>}
             </div>
 
