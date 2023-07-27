@@ -1,4 +1,4 @@
-<p align="center"><img src="/zenitheventslogo.svg" width="400" alt="Zenith Events Logo"> Zenith Events </p>
+<p align="center"><img src="/zenitheventslogo.svg" width="100" alt="Zenith Events Logo"> Zenith Events </p>
 
 <p align="center">
 </p>
