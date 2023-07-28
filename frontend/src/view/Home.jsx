@@ -23,7 +23,6 @@ const eventsState = useSelector((state) => state.event.events) || [];
     axiosClient
       .get('/events') // Replace with the correct API endpoint
       .then((response) => {
-        console.log(response.data.events)
         dispatch(setEvents(response.data.events));
       })
       .catch((error) => {
@@ -65,7 +64,7 @@ dispatch(selectEventDetails(event))
             <EventCard key={event.id} event={event} handleClick={handleClick} />
           ))
         ) : (
-          <p>No events available.</p>
+          <p className='text-xl my-5 text-green-700 font-light'>Loading ....</p>
         )}
       </div>
       <div className="hidden md:grid">

@@ -32,7 +32,6 @@ export default function UpdatePasswordForm({ className = '' }) {
         axiosClient.put('/updatePassword', {
             currentPassword: currentPassword, password:password, password_confirmation:passwordConfirmation
         }).then((response)=>{
-            console.log(response)
             if(response.data.message){
                 setErrors({})
                 setErrors("")

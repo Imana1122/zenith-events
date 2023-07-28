@@ -42,7 +42,6 @@ export default function DefaultLayout() {
 
   const logout = (ev) => {
     ev.preventDefault();
-    console.log(currentUser, userToken)
     axiosClient.post('/logout')
     .then(res => {
         setCurrentUser({})
@@ -115,17 +114,6 @@ export default function DefaultLayout() {
 
                             <Menu.Item>
                               <a
-                                href="#"
-                                onClick={(ev) => logout(ev)}
-                                className={
-                                  "block px-4 py-2 text-sm text-slate-700"
-                                }
-                              >
-                                Sign out
-                              </a>
-                            </Menu.Item>
-                            <Menu.Item>
-                              <a
                                 href={`/profile?name=${currentUser.name}&email=${currentUser.email}&phoneNumber=${currentUser.phoneNumber}`}
 
                                 className={
@@ -146,6 +134,19 @@ export default function DefaultLayout() {
                                 Bookings
                               </a>
                             </Menu.Item>
+
+                            <Menu.Item>
+                              <a
+                                href="#"
+                                onClick={(ev) => logout(ev)}
+                                className={
+                                  "block px-4 py-2 text-sm text-red-500"
+                                }
+                              >
+                                Sign out
+                              </a>
+                            </Menu.Item>
+
 
                           </Menu.Items>
                         </Transition>
@@ -207,20 +208,29 @@ export default function DefaultLayout() {
                     </div>
                   </div>
                   <div className="mt-3 space-y-1 px-2">
-                    <Disclosure.Button
-                      as="a"
-                      href="#"
-                      onClick={(ev) => logout(ev)}
-                      className="block rounded-md px-3 py-2 text-base font-medium text-slate-700 hover:bg-purple-900 hover:text-white"
-                    >
-                      Signout
-                    </Disclosure.Button>
-                    <Disclosure.Button
+                  <Disclosure.Button
                       as="a"
                       href={`/profile?name=${currentUser.name}&email=${currentUser.email}&phoneNumber=${currentUser.phoneNumber}`}
                       className="block rounded-md px-3 py-2 text-base font-medium text-slate-700 hover:bg-purple-900 hover:text-white"
                     >
                       Profile
+                    </Disclosure.Button>
+                    <Disclosure.Button
+                      as="a"
+                      href={`/userBookings?name=${currentUser.name}&email=${currentUser.email}&phoneNumber=${currentUser.phoneNumber}`}
+                      className="block rounded-md px-3 py-2 text-base font-medium text-slate-700 hover:bg-purple-900 hover:text-white"
+                    >
+                      Bookings
+                    </Disclosure.Button>
+
+
+                    <Disclosure.Button
+                      as="a"
+                      href="#"
+                      onClick={(ev) => logout(ev)}
+                      className="block rounded-md px-3 py-2 text-base font-medium text-red-500 hover:bg-purple-900 hover:text-white"
+                    >
+                      Signout
                     </Disclosure.Button>
 
 

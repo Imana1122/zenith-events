@@ -19,7 +19,7 @@ const TransactionChart = () => {
 
           setMonthlyRevenue(response.data.monthlyRevenue);
           setYearlyRevenue(response.data.totalYearlyRevenue)
-          console.log(monthlyRevenue);
+
         })
         .catch((error) => {
           console.error(error);

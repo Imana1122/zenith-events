@@ -8,7 +8,7 @@ export const EventListItem = ({ event, onDeleteClick , booking}) => {
   };
 
   return (
-    <div className="rounded shadow-md shadow-slate-500 p-4 mb-10 cursor-pointer">
+    <div className="event-card relative rounded overflow-hidden shadow-lg md:mb-10 cursor-pointer transition-transform transform-gpu hover:scale-105 p-2" onClick={() => handleClick({eventId:event.id, event:event})}>
       <img
         src={event.imagePath}
         alt={event.title}

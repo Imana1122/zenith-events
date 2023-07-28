@@ -123,7 +123,7 @@ public function getUserEvents()
     $user = Auth::user();
 
     // Get the events for the user
-    $bookings = $user->bookings()->with('event')->get();
+    $bookings = $user->bookings()->with('event')->where('esewa_status', true)->get();
 
     return response()->json(['bookings' => $bookings]);
 }

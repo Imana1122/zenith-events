@@ -14,12 +14,10 @@ const EventDetails = () => {
 
 
     const selectedEvent = useSelector((state) => state.event.selectedEvent) || null;
-    console.log(selectedEvent)
+
 
     const count = useSelector((state) => state.count.count);
 
-
-    console.log(count, selectedEvent);
 
 
     useEffect(()=>{

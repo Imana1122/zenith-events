@@ -15,7 +15,7 @@ const BuyerProfileChart = () => {
         .get('/getMostBookedEvents') // Replace with the correct API endpoint
         .then((response) => {
             setOrderedEvents(response.data.orderedEvents);
-          console.log(response)
+
         })
         .catch((error) => {
           console.error(error);
@@ -27,7 +27,7 @@ const BuyerProfileChart = () => {
       axiosClient
         .get('/getRevenue') // Replace with the correct API endpoint
         .then((response) => {
-          console.log(response);
+
           setUserRevenue(response.data.userYearlyRevenue)
         })
         .catch((error) => {

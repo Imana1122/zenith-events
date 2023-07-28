@@ -21,14 +21,14 @@ export const NewTrainer = () => {
   });
 
   useEffect(() => {
-    console.log(trainerId)
+
     if (trainerId && mode === "update") {
       // Fetch the existing event data using the trainerId
       axiosClient
         .get(`/trainers/${trainerId}`)
         .then((response) => {
           setTrainer(response.data.event);
-          console.log(response)
+
         })
         .catch((error) => {
           console.error(error);
@@ -61,7 +61,7 @@ export const NewTrainer = () => {
 
     const requestUrl = trainerId ? `/updateTrainer/${trainerId}` : "/createTrainer";
     const requestMethod = trainerId ? "PUT" : "POST";
-    console.log(trainer)
+
 
     axiosClient
       .request({
@@ -70,10 +70,10 @@ export const NewTrainer = () => {
         data: trainer,
       })
       .then(({ data }) => {
-        console.log(data);
+
         toast.success(data.message);
         navigate('/trainers');
-        console.log("ok")
+
         // Handle the response data
       })
       .catch((error) => {

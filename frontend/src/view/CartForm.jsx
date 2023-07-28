@@ -19,8 +19,6 @@ const CartForm = () => {
  const count = useSelector((state) => state.count.count);
 
 
- console.log(count, selectedEvent);
-
   useEffect(()=>{
     if(!selectedEvent){
         navigate('/')

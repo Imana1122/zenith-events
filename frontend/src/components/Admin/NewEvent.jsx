@@ -83,7 +83,7 @@ export const NewEvent = () => {
         imagePath: imagePath,
       }));
     } catch (error) {
-      console.log(error);
+
     }
   };
 
@@ -111,10 +111,10 @@ export const NewEvent = () => {
         },
       })
       .then(({ data }) => {
-        console.log(data);
+
         toast.success(data.message);
         navigate("/events");
-        console.log("ok");
+ 
         // Handle the response data
       })
       .catch((error) => {

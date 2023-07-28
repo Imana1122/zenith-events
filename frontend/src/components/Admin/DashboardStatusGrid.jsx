@@ -15,7 +15,7 @@ export const DashboardStatusGrid = () => {
     const currentMonth = currentDate.getMonth() + 1; // Adding 1 because getMonth() returns zero-based index
 
     const currentYear = currentDate.getFullYear();
-    console.log(currentYear)
+
 
     useEffect(() => {
       axiosClient
@@ -29,7 +29,7 @@ export const DashboardStatusGrid = () => {
             const currentMonthRevenue = response.data.monthlyRevenue.find(entry => entry.month === currentMonth);
             const monthlyRevenue = currentMonthRevenue ? currentMonthRevenue.revenue : '';
             setThisMonthRevenue(monthlyRevenue)
-            console.log(response)
+
 
         })
         .catch((error) => {
@@ -42,7 +42,7 @@ export const DashboardStatusGrid = () => {
     axiosClient
       .get('/bookings') // Replace with the correct API endpoint
       .then((response) => {
-        console.log(response);
+
         setBookings(response.data.bookings);
         setYetToBeBookings(response.data.yetToBeBookings);
       })
@@ -55,7 +55,7 @@ export const DashboardStatusGrid = () => {
     axiosClient
       .get('/getUsers') // Replace with the correct API endpoint
       .then((response) => {
-        console.log(response);
+
         setUsers(response.data.users);
         setThisMonthUsers(response.data.thisMonthUsers)
       })

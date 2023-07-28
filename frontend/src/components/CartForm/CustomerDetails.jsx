@@ -12,13 +12,6 @@ const CustomerDetails = () => {
 
     const currentUser= JSON.parse(localStorage.getItem('USER'));
 
-
-
-  useEffect(() => {
-    console.log(currentUser.email, currentUser.id, currentUser.name, currentUser.phoneNumber);
-  }, [currentUser]);
-
-
   const isAgreed = useSelector((state) => state.isAgreed.isAgreed);
 
   const selectedEvent = useSelector((state) => state.event.selectedEvent) || null;
@@ -32,10 +25,9 @@ const CustomerDetails = () => {
         navigate('/')
       }
 })
-console.log(count, selectedEvent);
 
   const cartTotal = selectedEvent ? selectedEvent.price * count : 0;
-  const VAT = 0.2; // Example VAT rate
+  const VAT = 0; // Example VAT rate
   const subtotal = cartTotal;
   const total = subtotal + subtotal * VAT;
 
@@ -52,21 +44,7 @@ console.log(count, selectedEvent);
     bookOrderId : Date.now()
   });
 
-
-useEffect(()=>{
-    console.log(isAgreed)
-})
-
   const [verificationCode, setVerificationCode]=useState();
-
-
-
-
-
-  useEffect(() => {
-    console.log(formData);
-  }, [formData]);
-
 
 
 
@@ -86,10 +64,9 @@ useEffect(()=>{
         },
       })
       .then((response) => {
-        console.log(response);
+
         toast.success(response.data.message);
-        const verifyCode = response.data.verification_code.toString()
-        console.log(verifyCode);
+
 
       })
       .catch((error) => {
@@ -121,13 +98,26 @@ useEffect(()=>{
         },
       })
       .then((response) => {
-        console.log(response);
-        toast.success(response.data.message);
+
+        if(response.data.message === "true"){
+        try {
+            navigate('/esewa', {
+              state: {
+                bookOrderId: formData.bookOrderId,
+                totalAmount: formData.totalAmount,
+                eventId: formData.eventId
+              }
+            });
+          } catch (error) {
+            console.log(error);
+          }
+        }
+
       })
       .catch((error) => {
-        if (error.response && error.response.data && error.response.data.message) {
-          toast.error(error.response.data.message);
-          console.log(error)
+        if (error.response && error.response.data && error.response.data.error) {
+          toast.error(error.response.data.error);
+
         } else {
           console.log(error);
           toast('Internal server error');
@@ -145,7 +135,7 @@ useEffect(()=>{
         },
       })
       .then((response) => {
-        console.log(response);
+
         toast.success(response.data.message);
         setFormData(prevFormData => ({
           ...prevFormData,
@@ -155,16 +145,7 @@ useEffect(()=>{
         // Rest of code if success
         if (response.data.verificationStatus === true) {
             booking();
-          try {
-            navigate('/esewa', {
-              state: {
-                bookOrderId: formData.bookOrderId,
-                totalAmount: formData.totalAmount,
-              }
-            });
-          } catch (error) {
-            console.log(error);
-          }
+
         }
       })
       .catch((error) => {

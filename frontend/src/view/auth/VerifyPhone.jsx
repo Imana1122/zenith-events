@@ -23,7 +23,6 @@ export default function VerifyPhone() {
 
     axiosClient.post('/verify-phone', { phoneNumber })
       .then((response) => {
-console.log(response);
         setMessage(response.data.message);
         setError(response.data.error)
         setProcessing(false)

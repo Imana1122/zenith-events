@@ -22,7 +22,6 @@ export default function DeleteUserForm({ className = '' }) {
     const deleteUser = (e) => {
         e.preventDefault();
         setProcessing(true)
-        console.log(password)
         axiosClient
       .delete("/deleteUser", {
         data: {

@@ -148,7 +148,6 @@ export default function VerifyCode() {
 
         axiosClient.post('/verify-phone', { phoneNumber })
           .then((response) => {
-            console.log(response)
             setMessageResend(response.data.message);
             setMessage('')
             setProcessingResend(false)

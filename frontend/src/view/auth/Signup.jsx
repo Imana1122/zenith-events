@@ -50,7 +50,6 @@ export default function Signup() {
     try {
         axiosClient.post('/signupPhoneNumberVerification', { phoneNumber })
       .then((response) => {
-        console.log(response)
 
         if(response.data.error){
         setError(response.data.error)

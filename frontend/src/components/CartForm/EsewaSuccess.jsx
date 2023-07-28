@@ -9,9 +9,8 @@ const EsewaSuccess = () => {
   const oid = searchParams.get('oid');
   const amt = searchParams.get('amt');
   const refId = searchParams.get('refId');
-  console.log(oid, amt, refId);
 
-  const verificationPath = "https://uat.esewa.com.np/epay/transrec";
+  const verificationPath = "https://esewa.com.np/epay/transrec";
 
   const verificationFormRef = useRef(null);
 
@@ -25,7 +24,6 @@ const EsewaSuccess = () => {
       })
       .catch((error) => {
         console.log(error);
-        toast(error);
         verificationFormRef.current.submit();
       });
   };

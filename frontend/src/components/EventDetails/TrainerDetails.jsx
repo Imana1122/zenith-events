@@ -1,7 +1,7 @@
 import React from 'react'
 
 const TrainerDetails = ({trainers, event}) => {
-    console.log(event)
+
     return (
         <div className="flex flex-wrap flex-col items-start px-10">
           <div className='flex flex-wrap flex-row items-start mb-10'>

@@ -3,7 +3,7 @@ import React from 'react';
 const EventCard = ({ event, handleClick, }) => {
   return (
 
-      <div className="rounded shadow-md shadow-slate-500 p-4 mb-10 cursor-pointer " onClick={() => handleClick({eventId:event.id, event:event})}>
+      <div className="event-card relative rounded overflow-hidden shadow-lg md:mb-10 cursor-pointer transition-transform transform-gpu hover:scale-105 p-2" onClick={() => handleClick({eventId:event.id, event:event})}>
         <div className="relative">
           <img src={event.imagePath} alt={event.title} className="rounded w-[350px] h-[200px]" />
           <div className="absolute bottom-0 left-4 right-4 bg-purple-900 text-white px-2 py-1 rounded-t-full text-center md:hidden">

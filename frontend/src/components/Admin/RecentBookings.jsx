@@ -16,7 +16,7 @@ const RecentBookings = () => {
     axiosClient
       .get('/bookings') // Replace with the correct API endpoint
       .then((response) => {
-        console.log(response);
+
         setBookings(response.data.bookings);
         setOngoingBookings(response.data.ongoingBookings);
         setYetToBeBookings(response.data.yetToBeBookings);
@@ -41,28 +41,28 @@ const RecentBookings = () => {
   };
 
   const filterBookings = () => {
-    console.log(filteredBookings)
+
     switch (filter) {
       case 'finished':
         setFilteredBookings(finishedBookings);
-        console.log(filteredBookings)
+
 
         break;
       case 'ongoing':
         setFilteredBookings(ongoingBookings);
-        console.log(filteredBookings)
+
         break;
       case 'yet':
         setFilteredBookings(yetToBeBookings);
-        console.log(filteredBookings)
+
         break;
       case '':
         setFilteredBookings(bookings);
-        console.log(bookings)
+
         break;
       default:
         setFilteredBookings(bookings);
-        console.log(filteredBookings)
+
         break;
     }
   };

@@ -11,8 +11,6 @@ export default function ResetPassword() {
     const phoneNumber = searchParams.get('phoneNumber');
     const code = searchParams.get('code');
 
-    console.log(code,phoneNumber)
-
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [message, setMessage] = useState("");
@@ -29,7 +27,6 @@ export default function ResetPassword() {
     axiosClient
       .put("/resetPassword", {phoneNumber:phoneNumber,password:password,password_confirmation:passwordConfirmation  })
       .then((response) => {
-        console.log(response)
         setMessage(response.data.message);
         setProcessing(false)
         navigate('/login')

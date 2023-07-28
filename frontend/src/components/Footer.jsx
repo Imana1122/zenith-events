@@ -55,6 +55,7 @@ const Footer = () => {
     </footer>
     </div>
     <div>
+        
     <footer className='md:hidden'>
     <hr className="my-6 border-gray-500" />
     <div className="container mx-auto px-5 flex justify-start flex-col">

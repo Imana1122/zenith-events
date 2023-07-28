@@ -32,7 +32,6 @@ export default function UpdateProfileInformation({ fullName, userEmail, userPhon
         axiosClient.put('/updateProfile',{
             name:name, email:email, phoneNumber:phoneNumber
         }).then((response)=>{
-            console.log(response.data.message);
             if(response.data.error){
                 setError(response.data.error)
             }

@@ -8,14 +8,7 @@ import { admin } from '../admin';
 
 export const AdminLayout = () => {
     const { currentUser, userToken, setCurrentUser, setUserToken } = useStateContext();
-console.log(currentUser)
-    // useEffect(() => {
-    //   setCurrentUser(JSON.parse(localStorage.getItem('USER')));
-    // }, []); // Run the effect only once when the component mounts
 
-    useEffect(() => {
-      console.log(currentUser.email, currentUser.id, currentUser.name);
-    }, [currentUser]); // Run the effect when the currentUser values change
 
 
     if (!userToken) {
@@ -24,7 +17,6 @@ console.log(currentUser)
 
     const logout = (ev) => {
         ev.preventDefault();
-        console.log(currentUser, userToken)
         axiosClient.post('/logout')
         .then(res => {
             setCurrentUser({})

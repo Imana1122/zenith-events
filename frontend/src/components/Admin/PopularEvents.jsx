@@ -10,7 +10,7 @@ const PopularEvents = () => {
       .get('/getMostBookedEvents') // Replace with the correct API endpoint
       .then((response) => {
         setPopularEvents(response.data.popularEvents);
-        console.log(popularEvents)
+
       })
       .catch((error) => {
         console.error(error);

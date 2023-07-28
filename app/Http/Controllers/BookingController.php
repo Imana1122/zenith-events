@@ -9,28 +9,49 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class BookingController extends Controller
 {
-    public function store(BookingRequest $request){
-
+    public function store(BookingRequest $request) {
         $data = $request->validated();
 
-        Booking::create([
-            'userId' => $data['userId'],
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'address'  => $data['address'],
-            'eventId'  => $data['eventId'],
-            'noOfPeople'  => $data['noOfPeople'],
-            'totalAmount'  => $data['totalAmount'],
-            'phoneNumber'  => $data['phoneNumber'],
-            'verificationStatus'  => true,
-            'esewa_status'  => 'uncertain',
-            'bookOrderId' => $data['bookOrderId']
+        // Retrieve the event based on eventId
+        $event = Event::find($data['eventId']);
 
-        ]);
+        if (!$event) {
+            return response()->json(['message' => 'Event not found'], 404);
+        }
+
+        // Calculate the total amount based on event price and noOfPeople
+        $totalAmount = $event->price * $data['noOfPeople'];
+
+        // Convert totalAmount to an integer (assuming it's in decimal format, you can adjust as needed)
+        $totalAmount = (int) $totalAmount;
+        $data['totalAmount'] = (int) $data['totalAmount'];
+
+        if ($totalAmount === $data['totalAmount']) {
+            Booking::create([
+                'userId' => $data['userId'],
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'address'  => $data['address'],
+                'eventId'  => $data['eventId'],
+                'noOfPeople'  => $data['noOfPeople'],
+                'totalAmount'  => $totalAmount, // Use the calculated totalAmount
+                'phoneNumber'  => $data['phoneNumber'],
+                'verificationStatus'  => true,
+                'esewa_status'  => 'uncertain',
+                'bookOrderId' => $data['bookOrderId']
+            ]);
+
+            // Optionally, you can return a success response or perform additional actions
+            return response()->json(['message' => 'true']);
+        } else {
+            return response()->json(['error' => 'No further booking can be done.'], 400);
+        }
     }
+
 
 
 
@@ -151,13 +172,16 @@ public function getRevenue()
     $user = Auth::user();
 
     // Get the bookings for the user
-    $bookings = $user->bookings;
+    $bookings = $user->bookings()
+    ->where('esewa_status', true)
+    ->get();
 
 
     return response()->json(['userBookings'=> $bookings]);
     }
 
-    public function deleteSpecificUserBooking($bookingId)
+
+public function deleteSpecificUserBooking($bookingId)
 {
     // Get the authenticated user
     $user = Auth::user();
@@ -165,12 +189,27 @@ public function getRevenue()
     // Find the booking by the given bookingId that belongs to the authenticated user
     $booking = $user->bookings()->find($bookingId);
 
-    // If the booking exists and belongs to the user, delete it
+    // Check if the booking exists and belongs to the user
     if ($booking) {
-        $booking->delete();
-        return response()->json(['success'=> 'Booking deleted successfully.']);
+        // Get the end_date of the booking and parse it with Carbon
+        $endDate = Carbon::parse($booking->getAttribute('end_date'));
+
+        // Get today's date
+        $today = Carbon::today();
+
+        // Check if the booking's end_date is after today's date
+        if ($endDate->isAfter($today)) {
+            // Delete the booking if conditions are met
+            $booking->delete();
+            return response()->json(['success' => 'Booking deleted successfully.']);
+        } else {
+            return response()->json(['error' => 'The booking end date has already passed.']);
+        }
     } else {
-        return response()->json(['error'=> 'Booking not found or you are not authorized to delete it.']);
+        return response()->json(['error' => 'Booking not found or you are not authorized to delete it.']);
     }
 }
+
+
+
 }
