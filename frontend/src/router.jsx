@@ -24,6 +24,7 @@ import VerifyPhone from "./view/auth/VerifyPhone";
 import Edit from "./view/profile/Edit";
 import ResetPassword from "./view/auth/ResetPassword";
 import { UserBookings } from "./view/profile/UserBookings";
+import EsewaFailure from "./components/CartForm/EsewaFailure";
 // import { useMediaQuery } from "@mui/material";
 
 const AppRouter = () => {
@@ -54,20 +55,23 @@ const AppRouter = () => {
             <Route path="/event/:id/cart-form/customer-details" element={<CustomerDetails />} />
             <Route path="/esewa" element={<EsewaPayment />} />
             <Route path="/success" element={<EsewaSuccess />} />
+            <Route path="/failure" element={<EsewaFailure />} />
             <Route path="/profile" element={<Edit />} />
             <Route path="/userBookings" element={<UserBookings />} />
-            <Route path="*" element={<Navigate to="/" />} />
+            {/* <Route path="*" element={<Navigate to="/" />} /> */}
         </Route>
       )}
 
       <Route path="/" element={<GuestLayout />}>
          <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+      <Route path="/signup" element={<Signup />} />
         <Route path="/verify-phone" element={<VerifyPhone />} />
         <Route path="/verify-code" element={<VerifyCode />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+
         <Route path="*" element={<Login />} />
       </Route>
+
 
     </Routes>
   );

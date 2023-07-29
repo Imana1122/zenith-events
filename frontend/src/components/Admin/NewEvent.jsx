@@ -6,6 +6,7 @@ import { useParams } from "react-router";
 import { useNavigate } from "react-router-dom";
 import axiosClient from "../../axios";
 import { PageComponent } from "../AdminLayoutComponent";
+import { ImageToBase64 } from "../../utility/ImageToBase64";
 
 export const NewEvent = () => {
   const { eventId } = useParams();
@@ -71,20 +72,13 @@ export const NewEvent = () => {
   }, []);
 
   const uploadImage = async (e) => {
-    const file = e.target.files[0];
-    const formData = new FormData();
-    formData.append("image", file);
-
-    try {
-      const response = await axiosClient.post("/uploadImage", formData);
-      const imagePath = response.data.imageUrl; // Assuming the response contains 'imageUrl'
-      setEvent((prev) => ({
+    const imageData = await ImageToBase64(e.target.files[0]);
+    setEvent((prev) => {
+      return {
         ...prev,
-        imagePath: imagePath,
-      }));
-    } catch (error) {
-
-    }
+        imagePath: imageData,
+      };
+    });
   };
 
   const onSubmit = (ev) => {
@@ -114,7 +108,7 @@ export const NewEvent = () => {
 
         toast.success(data.message);
         navigate("/events");
- 
+
         // Handle the response data
       })
       .catch((error) => {

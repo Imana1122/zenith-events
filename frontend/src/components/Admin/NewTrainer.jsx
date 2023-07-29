@@ -6,6 +6,7 @@ import {  toast } from "react-hot-toast";
 import axiosClient from "../../axios";
 import {  useParams } from "react-router";
 import { useNavigate } from "react-router-dom";
+import { ImageToBase64 } from "../../utility/ImageToBase64";
 
 
 export const NewTrainer = () => {
@@ -27,7 +28,7 @@ export const NewTrainer = () => {
       axiosClient
         .get(`/trainers/${trainerId}`)
         .then((response) => {
-          setTrainer(response.data.event);
+            setTrainer(response.data.event);
 
         })
         .catch((error) => {
@@ -37,21 +38,13 @@ export const NewTrainer = () => {
   }, [trainerId, mode]);
 
   const uploadImage = async (e) => {
-    const file = e.target.files[0];
-    const formData = new FormData();
-    formData.append("image", file);
-
-    try {
-      const response = await axiosClient.post("/uploadImage", formData);
-      const imagePath = response.data.imageUrl; // Assuming the response contains 'imageUrl'
-      setTrainer((prev) => ({
+    const imageData = await ImageToBase64(e.target.files[0]);
+    setTrainer((prev) => {
+      return {
         ...prev,
-        imagePath: imagePath
-      }));
-      toast.success("Image uploaded successfully");
-    } catch (error) {
-      toast.error("Error uploading image");
-    }
+        imagePath: imageData,
+      };
+    });
   };
 
   const onSubmit = (ev) => {
@@ -130,7 +123,7 @@ export const NewTrainer = () => {
                   Photo
                 </label>
                 <div className="mt-1 flex items-center">
-                  {<trainer className="imagePath"></trainer> && (
+                {trainer.imagePath && (
                     <img
                       src={trainer.imagePath}
                       alt="trainer"
@@ -148,7 +141,7 @@ export const NewTrainer = () => {
                   >
                     <input
                       type="file"
-                      className="absolute text-0 top-0 right-0 bottom-0 opacity-0"
+                      className="absolute text-0 top-0 right-0 bottom-0 opacity-0 cursor-pointer"
                       onChange={uploadImage}
                     />
                     Change

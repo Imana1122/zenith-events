@@ -58,7 +58,7 @@ class PhoneVerificationController extends Controller
             ]);
 
             if ($response->getStatusCode() === 200) {
-                return response()->json(['message' => 'Verification code sent successfully']);
+                return response()->json(['message' => 'Verification code sent successfully', 'code' => $verificationCode]);
             } else {
                 return response()->json(['error' => 'Failed to send verification code'], 500);
             }

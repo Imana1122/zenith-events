@@ -167,17 +167,51 @@ public function getRevenue()
 
     }
 
-    public function userBooking(Request $request){
+    public function userBooking(Request $request) {
         // Get the currently authenticated user
-    $user = Auth::user();
+        $user = Auth::user();
 
-    // Get the bookings for the user
-    $bookings = $user->bookings()
-    ->where('esewa_status', true)
-    ->get();
+        // Get the bookings for the user with esewa_status true
+        $bookings = $user->bookings()
+        ->where('esewa_status', true)
+        ->with('event')
+        ->get();
 
+        // Get today's date
+        $today = Carbon::today();
 
-    return response()->json(['userBookings'=> $bookings]);
+        // Separate the bookings into different categories based on their dates
+        $allBookings = [];
+        $finishedBookings = [];
+        $ongoingBookings = [];
+        $yetToBeBookings = [];
+
+        foreach ($bookings as $booking) {
+            $startDate = Carbon::parse($booking->getAttribute('start_date'));
+            $endDate = Carbon::parse($booking->getAttribute('end_date'));
+
+            // Check if the booking is already finished
+            if ($endDate->isBefore($today)) {
+                $finishedBookings[] = $booking;
+            } elseif ($startDate->isAfter($today)) {
+                // Check if the booking is yet to be
+                $yetToBeBookings[] = $booking;
+            } else {
+                // Otherwise, the booking is ongoing
+                $ongoingBookings[] = $booking;
+            }
+
+            // Add the booking to the "all" bookings array
+            $allBookings[] = $booking;
+        }
+
+        // Return the bookings in the response
+        return response()->json([
+            'All' => $allBookings,
+            'Finished' => $finishedBookings,
+            'Ongoing' => $ongoingBookings,
+            'Yet To Be' => $yetToBeBookings,
+        ]);
     }
 
 

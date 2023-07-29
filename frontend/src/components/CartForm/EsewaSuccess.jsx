@@ -1,45 +1,41 @@
-import React, { useRef } from 'react';
-import { toast } from 'react-hot-toast';
-import { useLocation } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import axiosClient from '../../axios';
 
 const EsewaSuccess = () => {
+    const [message, setMessage] = useState("");
+    const [error, setError] =useState("");
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const oid = searchParams.get('oid');
   const amt = searchParams.get('amt');
   const refId = searchParams.get('refId');
 
-  const verificationPath = "https://esewa.com.np/epay/transrec";
-
   const verificationFormRef = useRef(null);
+
+  useEffect(() => {
+    handlePaymentVerification();
+  }, []);
 
    const handlePaymentVerification = () => {
     // Handle payment success
     axiosClient
       .post('/esewa-payment', { oid: oid.toString(), amt: amt.toString() })
       .then((response) => {
-        toast(response.message);
-        verificationFormRef.current.submit();
+        setMessage(response.data.message);
+        setError(response.data.error);
+
       })
       .catch((error) => {
         console.log(error);
-        verificationFormRef.current.submit();
+
       });
   };
 
   return (
-    <div>
-      <form ref={verificationFormRef} method="POST" action={verificationPath}>
-        <input type="hidden" name="amt" value={amt} />
-        <input type="hidden" name="rid" value={refId} />
-        <input type="hidden" name="pid" value={oid} />
-        <input type="hidden" name="scd" value="EPAYTEST" />
-        <input type="submit" style={{ display: 'none' }} />
-      </form>
-      <div className='m-auto px-10 py-5 flex justify-center items-center'>
-        <button className='px-5 py-3 m-auto bg-green-500 rounded-lg' onClick={handlePaymentVerification}>Verify Payment</button>
-      </div>
+    <div className='my-10 flex flex-col justify-between items-center'>
+      <div>{message && <p className='text-green-700 font-thin text-xl my-5'>{message}</p>}{error && <p className='text-green-700 font-thin text-xl my-5'>{error}</p>}</div>
+      <p>Watch your bookings <Link to={'/userBookings'} className='text-green-700 text-xl font-bold'>HERE!</Link> </p>
     </div>
   );
 };

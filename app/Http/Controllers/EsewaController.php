@@ -31,11 +31,11 @@ class EsewaController extends Controller
                 $booking->save();
             } else {
                 // Handle the case when the paid amount doesn't match the expected amount
-                return response()->json(['message' => 'Paid amount does not match the expected amount'], 400);
+                return response()->json(['error' => 'Paid amount does not match the expected amount'], 400);
             }
         } else {
             // Handle the case when the booking with the given bookOrderId is not found
-            return response()->json(['message' => 'Booking not found'], 404);
+            return response()->json(['error' => 'Booking not found'], 404);
         }
 
         // Optionally, you can return a success response or perform additional actions

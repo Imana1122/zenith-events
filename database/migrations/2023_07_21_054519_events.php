@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('workshop');
             $table->text('description');
             $table->text('eventHostDetails');
-            $table->string('imagePath')->nullable(); // Make imagePath column nullable
+            $table->text('imagePath')->nullable(); // Make imagePath column nullable
             $table->timestamps();
         });
     }

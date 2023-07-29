@@ -9,7 +9,7 @@ const EsewaPayment = () => {
   const merchantId = 'NP-ES-KAFALS';
 
   // Replace with the production payment URL provided by eSewa
-  const paymentPath = 'https://esewa.com.np/epay/main';
+  const paymentPath = 'https://uat.esewa.com.np/epay/main';
 
   const paymentParams = {
     amt: totalAmount,
@@ -19,9 +19,9 @@ const EsewaPayment = () => {
     tAmt: totalAmount,
     pid: bookOrderId,
     // Replace with your production service code
-    scd: 'NP-ES-KAFALS',
+    scd: 'EPAYTEST',
     // Replace with your production success and failure URLs
-    su: 'http://localhost:3000/booking',
+    su: 'http://localhost:3000/success',
     fu: 'http://localhost:3000/',
   };
 
@@ -43,7 +43,7 @@ useEffect(() => {
         ))}
         {/* Add the input fields for merchant ID and order ID */}
         <input type="hidden" name="oid" value={eventId} />
-        <input type="hidden" name="e" value={merchantId} />
+        {/* <input type="hidden" name="e" value={merchantId} /> */}
         <input type="submit" value="Make Payment" style={{ display: 'none' }} />
       </form>
       <div className="flex justify-center items-center my-20">

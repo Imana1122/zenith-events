@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('post');
             $table->string('skillLevel');
             $table->integer('experienceYears');
-            $table->string('imagePath')->nullable(); // Make imagePath column nullable
+            $table->text('imagePath')->nullable(); // Make imagePath column nullable
             $table->timestamps();
         });
     }
