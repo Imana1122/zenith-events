@@ -12,58 +12,76 @@ use Illuminate\Support\Facades\DB;
 class EventController extends Controller
 {
     public function createEvent(EventRequest $request)
-{
-    $data = $request->validated();
+    {
+        $data = $request->validated();
 
 
-    // Use mass assignment to create the event
-    $event = Event::create([
-        'title'=> $data['title'],
-        'price' => $data['price'],
-        'address' => $data['address'],
-        'start_date' => $data['start_date'],
-        'end_date' => $data['end_date'],
-        'workshop' =>$data['workshop'],
-        'imagePath'=>$data['imagePath'],
-        'description' => $data['description'],
-        'eventHostDetails' => $data['eventHostDetails']]
-    );
+        // Use mass assignment to create the event
+        $event = Event::create([
+            'title'=> $data['title'],
+            'price' => $data['price'],
+            'address' => $data['address'],
+            'start_date' => $data['start_date'],
+            'end_date' => $data['end_date'],
+            'workshop' =>$data['workshop'],
+            'imagePath'=>$data['imagePath'],
+            'description' => $data['description'],
+            'eventHostDetails' => $data['eventHostDetails']]
+        );
 
-        $eventId = $event->id;
-        $selectedTrainers = $data['selectedTrainers'];
+            $eventId = $event->id;
+            $selectedTrainers = $data['selectedTrainers'];
 
-     // Insert the data into the events_trainers table
-     foreach ($selectedTrainers as $trainerId) {
-        // Use Eloquent to insert data into the events_trainers table
-        EventTrainer::create([
-            'event_id' => $eventId,
-            'trainer_id' => $trainerId,
+        // Insert the data into the events_trainers table
+        foreach ($selectedTrainers as $trainerId) {
+            // Use Eloquent to insert data into the events_trainers table
+            EventTrainer::create([
+                'event_id' => $eventId,
+                'trainer_id' => $trainerId,
+            ]);
+        }
+
+        return response()->json(['message' => 'event and trainers saved successfully']);
+    }
+
+    public function getAllEvents()
+    {
+        $now = now();
+
+        $events = Event::with('trainers')->get();
+
+        $finishedEvents = Event::with('trainers')
+            ->where('end_date', '<', $now)
+            ->get();
+
+        $ongoingEvents = Event::with('trainers')
+            ->where('start_date', '<=', $now)
+            ->where('end_date', '>=', $now)
+            ->get();
+
+        $upcomingEvents = Event::with('trainers')
+            ->where('start_date', '>', $now)
+            ->get();
+
+        return response()->json([
+            'All' => $events,
+            'Finished' => $finishedEvents,
+            'Ongoing' => $ongoingEvents,
+            'Upcoming' => $upcomingEvents,
         ]);
     }
 
-    return response()->json(['message' => 'event and trainers saved successfully']);
-}
 
-public function getAllEvents()
-{
-
+    public function getEvents()
     {
-        $events = Event::with('trainers')->get();
+        $today = Carbon::today()->format('Y-m-d');
+        $events = Event::with('trainers')->where('start_date', '>', $today)->get();
 
-        return response()->json($events);
+        return response()->json(['events' => $events]);
     }
-}
-
-public function getEvents()
-{
-    $today = Carbon::today()->format('Y-m-d');
-    $events = Event::with('trainers')->where('start_date', '>', $today)->get();
-
-    return response()->json(['events' => $events]);
-}
 
 
-public function getEventById($eventId)
+    public function getEventById($eventId)
     {
         try {
             $event = Event::with('trainers')->findOrFail($eventId);
@@ -117,15 +135,15 @@ public function getEventById($eventId)
 
 
     // Inside your controller method or any relevant file
-public function getUserEvents()
-{
-    // Get the currently authenticated user
-    $user = Auth::user();
+    public function getUserEvents()
+    {
+        // Get the currently authenticated user
+        $user = Auth::user();
 
-    // Get the events for the user
-    $bookings = $user->bookings()->with('event')->where('esewa_status', true)->get();
+        // Get the events for the user
+        $bookings = $user->bookings()->with('event')->where('esewa_status', true)->get();
 
-    return response()->json(['bookings' => $bookings]);
-}
+        return response()->json(['bookings' => $bookings]);
+    }
 
 }

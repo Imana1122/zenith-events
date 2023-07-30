@@ -10,33 +10,41 @@ use Illuminate\Http\Request;
 
 class SearchController extends Controller
 {
+
     public function searchEvents(Request $request)
     {
+
         $query = $request->input('query');
 
-        $events = Event::where('title', 'LIKE', "%$query%")
-            ->orWhere('description', 'LIKE', "%$query%")
+        $events = Event::with('trainers')
+            ->where('title', 'LIKE', "%$query%")
             ->orWhere('id', 'LIKE', "%$query%")
-            ->orWhere('price', 'LIKE', "%$query%")
-            ->orWhere('address', 'LIKE', "%$query%")
-            ->orWhere('start_date', 'LIKE', "%$query%")
-            ->orWhere('end_date', 'LIKE', "%$query%")
             ->orWhere('workshop', 'LIKE', "%$query%")
-            ->orWhere('eventHostDetails', 'LIKE', "%$query%")
-            ->orWhere('created_at', 'LIKE', "%$query%")
-            ->orWhere('updated_at', 'LIKE', "%$query%")
             ->get();
 
-        // Additional search based on trainers
-        $trainers = Trainer::where('name', 'LIKE', "%$query%")->get();
+        $now = now();
+        $upcomingEvents = $events->filter(function ($event) use ($now) {
+            return $event->start_date > $now;
+        });
 
-        foreach ($trainers as $trainer) {
-            $events = $events->merge($trainer->events);
-        }
+        $ongoingEvents = $events->filter(function ($event) use ($now) {
+            return $event->start_date <= $now && $event->end_date >= $now;
+        });
 
-        return response()->json($events);
+        $finishedEvents = $events->filter(function ($event) use ($now) {
+            return $event->end_date < $now;
+        });
 
+        return response()->json([
+            'All' => $events,
+            'Upcoming' => $upcomingEvents,
+            'Ongoing' => $ongoingEvents,
+            'Finished' => $finishedEvents,
+        ]);
     }
+
+
+
 
     public function searchUsers(Request $request)
     {
@@ -55,14 +63,48 @@ class SearchController extends Controller
     {
         $query = $request->input('query');
 
-        $bookings = Booking::where('userId', 'LIKE', "%$query%")
-            ->orWhere('eventId', 'LIKE', "%$query%")
-            ->orWhere('id', 'LIKE', "%$query%")
-            ->orWhere('noOfPeople', 'LIKE', "%$query%")
-            ->orWhere('phoneNumber', 'LIKE', "%$query%")
-            ->orWhere('email', 'LIKE', "%$query%")
+        $bookings = Booking::with('event')
+        ->where('esewa_status', true)
+        ->where(function ($innerQuery) use ($query) {
+            $innerQuery->where('userId', 'LIKE', "%$query%")
+                ->orWhere('eventId', 'LIKE', "%$query%")
+                ->orWhere('id', 'LIKE', "%$query%");
+        })
+        ->get();
+
+
+        $now = now();
+        $upcomingBookings = $bookings->filter(function ($booking) use ($now) {
+            return $booking->event->start_date > $now;
+        });
+
+        $ongoingBookings = $bookings->filter(function ($booking) use ($now) {
+            return $booking->event->start_date <= $now && $booking->event->end_date >= $now;
+        });
+
+        $finishedBookings = $bookings->filter(function ($booking) use ($now) {
+            return $booking->event->end_date < $now;
+        });
+
+        return response()->json([
+            'All' => $bookings,
+            'Upcoming' => $upcomingBookings,
+            'Ongoing' => $ongoingBookings,
+            'Finished' => $finishedBookings,
+        ]);
+    }
+
+
+    public function searchTrainers(Request $request)
+    {
+        $query = $request->input('query');
+
+        $trainers = Trainer::where('id', 'LIKE', "%$query%")
+            ->orWhere('name', 'LIKE', "%$query%")
+            ->orWhere('post', 'LIKE', "%$query%")
+            ->orWhere('skillLevel', 'LIKE', "%$query%")
             ->get();
 
-        return response()->json($bookings);
+        return response()->json($trainers);
     }
 }

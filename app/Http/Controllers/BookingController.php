@@ -55,80 +55,80 @@ class BookingController extends Controller
 
 
 
-public function getAllBookings()
-{
-    $today = Carbon::today()->format('Y-m-d');
+    public function getAllBookings()
+    {
+        $today = Carbon::today()->format('Y-m-d');
 
-    $bookings = DB::table('bookings')
-        ->join('events', 'bookings.eventId', '=', 'events.id')
-        ->select('bookings.*')
-        ->whereRaw("STR_TO_DATE(events.end_date, '%Y-%m-%d') >= ?", [$today])
-        ->where('bookings.esewa_status', true)
-        ->get();
-
-
-    $ongoingBookings = DB::table('bookings')
-        ->join('events', 'bookings.eventId', '=', 'events.id')
-        ->select('bookings.*')
-        ->whereRaw("STR_TO_DATE(events.start_date, '%Y-%m-%d') <= ?", [$today])
-        ->whereRaw("STR_TO_DATE(events.end_date, '%Y-%m-%d') >= ?", [$today])
-        ->where('bookings.esewa_status', true)
-        ->get();
-
-    $yetToBeBookings = DB::table('bookings')
-        ->join('events', 'bookings.eventId', '=', 'events.id')
-        ->select('bookings.*')
-        ->whereRaw("STR_TO_DATE(events.start_date, '%Y-%m-%d') > ?", [$today])
-        ->where('bookings.esewa_status', true)
-        ->get();
-
-    $finishedBookings = DB::table('bookings')
-        ->join('events', 'bookings.eventId', '=', 'events.id')
-        ->select('bookings.*')
-        ->whereRaw("STR_TO_DATE(events.end_date, '%Y-%m-%d') < ?", [$today])
-        ->where('bookings.esewa_status', true)
-        ->get();
-
-    return response()->json([
-        'bookings' => $bookings,
-        'ongoingBookings' => $ongoingBookings,
-        'yetToBeBookings' => $yetToBeBookings,
-        'finishedBookings' => $finishedBookings
-    ]);
-}
-
-
-public function getRevenue()
-{
-    $currentYear = date('Y');
-    $monthlyRevenue = DB::table('bookings')
-
-        ->selectRaw('MONTH(created_at) AS month, SUM(totalAmount) AS revenue')
-        ->whereRaw("YEAR(created_at) = ?", [$currentYear])
-        ->where('bookings.esewa_status', true)
-        ->groupBy('month')
-        ->orderBy('month')
-        ->get();
-
-
-
-    $userYearlyRevenue = DB::table('bookings')
-            ->join('users', 'bookings.userId', '=', 'users.id')
-            ->selectRaw('users.id AS userId, users.name AS userName, SUM(bookings.totalAmount) AS revenue')
-            ->whereRaw("YEAR(bookings.created_at) = ?", [$currentYear])
+        $bookings = DB::table('bookings')
+            ->join('events', 'bookings.eventId', '=', 'events.id')
+            ->select('bookings.*')
+            ->whereRaw("STR_TO_DATE(events.end_date, '%Y-%m-%d') >= ?", [$today])
             ->where('bookings.esewa_status', true)
-            ->groupBy('users.id', 'users.name')
-            ->orderBy('users.id')
             ->get();
 
-   $totalYearlyRevenue = DB::table('bookings')
-   ->selectRaw('YEAR(created_at) AS year, SUM(totalAmount) AS revenue')
-    ->where('bookings.esewa_status', true)
-    ->groupBy('year')
-    ->get();
 
-    return response()->json(['monthlyRevenue' => $monthlyRevenue, 'userYearlyRevenue' => $userYearlyRevenue,'totalYearlyRevenue'=>$totalYearlyRevenue  ]);
-}
+        $ongoingBookings = DB::table('bookings')
+            ->join('events', 'bookings.eventId', '=', 'events.id')
+            ->select('bookings.*')
+            ->whereRaw("STR_TO_DATE(events.start_date, '%Y-%m-%d') <= ?", [$today])
+            ->whereRaw("STR_TO_DATE(events.end_date, '%Y-%m-%d') >= ?", [$today])
+            ->where('bookings.esewa_status', true)
+            ->get();
+
+        $yetToBeBookings = DB::table('bookings')
+            ->join('events', 'bookings.eventId', '=', 'events.id')
+            ->select('bookings.*')
+            ->whereRaw("STR_TO_DATE(events.start_date, '%Y-%m-%d') > ?", [$today])
+            ->where('bookings.esewa_status', true)
+            ->get();
+
+        $finishedBookings = DB::table('bookings')
+            ->join('events', 'bookings.eventId', '=', 'events.id')
+            ->select('bookings.*')
+            ->whereRaw("STR_TO_DATE(events.end_date, '%Y-%m-%d') < ?", [$today])
+            ->where('bookings.esewa_status', true)
+            ->get();
+
+        return response()->json([
+            'All' => $bookings,
+            'Ongoing' => $ongoingBookings,
+            'Upcoming' => $yetToBeBookings,
+            'Finished' => $finishedBookings
+        ]);
+    }
+
+
+    public function getRevenue()
+    {
+        $currentYear = date('Y');
+        $monthlyRevenue = DB::table('bookings')
+
+            ->selectRaw('MONTH(created_at) AS month, SUM(totalAmount) AS revenue')
+            ->whereRaw("YEAR(created_at) = ?", [$currentYear])
+            ->where('bookings.esewa_status', true)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
+
+
+
+        $userYearlyRevenue = DB::table('bookings')
+                ->join('users', 'bookings.userId', '=', 'users.id')
+                ->selectRaw('users.id AS userId, users.name AS userName, SUM(bookings.totalAmount) AS revenue')
+                ->whereRaw("YEAR(bookings.created_at) = ?", [$currentYear])
+                ->where('bookings.esewa_status', true)
+                ->groupBy('users.id', 'users.name')
+                ->orderBy('users.id')
+                ->get();
+
+    $totalYearlyRevenue = DB::table('bookings')
+    ->selectRaw('YEAR(created_at) AS year, SUM(totalAmount) AS revenue')
+        ->where('bookings.esewa_status', true)
+        ->groupBy('year')
+        ->get();
+
+        return response()->json(['monthlyRevenue' => $monthlyRevenue, 'userYearlyRevenue' => $userYearlyRevenue,'totalYearlyRevenue'=>$totalYearlyRevenue  ]);
+    }
 
 
 
@@ -210,40 +210,38 @@ public function getRevenue()
             'All' => $allBookings,
             'Finished' => $finishedBookings,
             'Ongoing' => $ongoingBookings,
-            'Yet To Be' => $yetToBeBookings,
+            'Upcoming' => $yetToBeBookings,
         ]);
     }
 
 
-public function deleteSpecificUserBooking($bookingId)
-{
-    // Get the authenticated user
-    $user = Auth::user();
+    public function deleteSpecificUserBooking($bookingId)
+    {
+        // Get the authenticated user
+        $user = Auth::user();
 
-    // Find the booking by the given bookingId that belongs to the authenticated user
-    $booking = $user->bookings()->find($bookingId);
+        // Find the booking by the given bookingId that belongs to the authenticated user
+        $booking = $user->bookings()->find($bookingId);
 
-    // Check if the booking exists and belongs to the user
-    if ($booking) {
-        // Get the end_date of the booking and parse it with Carbon
-        $endDate = Carbon::parse($booking->getAttribute('end_date'));
+        // Check if the booking exists and belongs to the user
+        if ($booking) {
+            // Get the end_date of the booking and parse it with Carbon
+            $endDate = Carbon::parse($booking->getAttribute('end_date'));
 
-        // Get today's date
-        $today = Carbon::today();
+            // Get today's date
+            $today = Carbon::today();
 
-        // Check if the booking's end_date is after today's date
-        if ($endDate->isAfter($today)) {
-            // Delete the booking if conditions are met
-            $booking->delete();
-            return response()->json(['success' => 'Booking deleted successfully.']);
+            // Check if the booking's end_date is after today's date
+            if ($endDate->isAfter($today)) {
+                // Delete the booking if conditions are met
+                $booking->delete();
+                return response()->json(['success' => 'Booking deleted successfully.']);
+            } else {
+                return response()->json(['error' => 'The booking end date has already passed.']);
+            }
         } else {
-            return response()->json(['error' => 'The booking end date has already passed.']);
+            return response()->json(['error' => 'Booking not found or you are not authorized to delete it.']);
         }
-    } else {
-        return response()->json(['error' => 'Booking not found or you are not authorized to delete it.']);
     }
-}
-
-
 
 }

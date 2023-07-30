@@ -34,42 +34,42 @@ class TrainerController extends Controller
     }
 
     public function getTrainerById($trainerId)
-        {
-            try {
-                $trainer = Trainer::findOrFail($trainerId);
-                return response()->json(['event' => $trainer]);
-            } catch (\Exception $e) {
-                return response()->json(['error' => 'Trainer not found'], 404);
-            }
+    {
+        try {
+            $trainer = Trainer::findOrFail($trainerId);
+            return response()->json(['event' => $trainer]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Trainer not found'], 404);
         }
+    }
 
     public function updateTrainer(TrainerRequest $request, $id)
-        {
-            $event = Trainer::findOrFail($id);
+    {
+        $event = Trainer::findOrFail($id);
 
-            $data = $request->validated();
+        $data = $request->validated();
 
-            $event->update([
-                'name' => $data['name'],
-                'post' => $data['post'],
-                'skillLevel' => $data['skillLevel'],
-                'experienceYears' => $data['experienceYears'],
-                'imagePath' => $data['imagePath'],
-            ]);
+        $event->update([
+            'name' => $data['name'],
+            'post' => $data['post'],
+            'skillLevel' => $data['skillLevel'],
+            'experienceYears' => $data['experienceYears'],
+            'imagePath' => $data['imagePath'],
+        ]);
 
-            return response()->json([
-                'event' => $event,
-                'message' => 'Trainer updated successfully.',
-            ]);
-        }
+        return response()->json([
+            'event' => $event,
+            'message' => 'Trainer updated successfully.',
+        ]);
+    }
 
-        public function deleteTrainer($id)
-        {
-            $event = Trainer::findOrFail($id);
-            $event->delete();
+    public function deleteTrainer($id)
+    {
+        $event = Trainer::findOrFail($id);
+        $event->delete();
 
-            return response()->json([
-                'message' => 'Trainer deleted successfully.',
-            ]);
-        }
+        return response()->json([
+            'message' => 'Trainer deleted successfully.',
+        ]);
+    }
 }

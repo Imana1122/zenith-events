@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useStateContext } from "../../contents/ContextProvider";
 import axiosClient from "../../axios";
-import GuestLayoutComponent from "../../components/GuestLayoutComponent";
-import PrimaryButton from "../../components/PrimaryButton";
+import GuestLayoutComponent from "../../components/pagelayouts/GuestLayoutComponent";
+import PrimaryButton from "../../components/core/PrimaryButton";
+import TButton from "../../components/core/TButton";
+import { BiArrowBack } from "react-icons/bi";
 
 export default function Signup() {
 
@@ -41,7 +42,7 @@ export default function Signup() {
             setErrors(error.response.data.errors);
 
         } else {
-          console.log(error);
+        //   console.log(error);
         }
       });
   }
@@ -59,7 +60,7 @@ export default function Signup() {
         navigate(url);
       })
       .catch((error) => {
-        console.log(error)
+        // console.log(error)
         if(error.response.data.errors){
             setError(error.response.data.errors);
         }
@@ -71,7 +72,7 @@ export default function Signup() {
 
 
       } catch (error) {
-        console.log(error)
+        // console.log(error)
 
       }
 
@@ -232,6 +233,11 @@ export default function Signup() {
             Sign in to your account
           </Link>
         </p>
+        <div>
+        <TButton color="indigo" to="/" circle>
+            <BiArrowBack/>
+        </TButton>
+        </div>
       </div>
     </GuestLayoutComponent>
   );

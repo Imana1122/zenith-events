@@ -25,17 +25,11 @@ class PhoneVerificationController extends Controller
                 }),
             ],
         ]);
-
-
-
-
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-
         $phoneNumber = strval($request->input('phoneNumber'));
-
 
         $verificationCode = mt_rand(10000, 99999);
         $encryptedCode= Hash::make($verificationCode);
@@ -45,8 +39,6 @@ class PhoneVerificationController extends Controller
             'verificationCode' => $encryptedCode,
             'verificationStatus' => false,
         ]);
-
-
         try {
             $client = new Client();
             $response = $client->post('https://sms.aakashsms.com/sms/v3/send', [
@@ -68,53 +60,47 @@ class PhoneVerificationController extends Controller
     }
 
     public function verifyPhoneNumber(Request $request)
-{
+    {
 
-    $validator = Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
 
-        'phoneNumber' => ['required', 'numeric'],
-        'verificationCode' => ['required', 'numeric'],
-    ]);
+            'phoneNumber' => ['required', 'numeric'],
+            'verificationCode' => ['required', 'numeric'],
+        ]);
 
-    if ($validator->fails()) {
-        $errors = $validator->errors();
+        if ($validator->fails()) {
+            $errors = $validator->errors();
 
-        $response = [
+            $response = [
 
-            'errors' => $errors->messages(),
-        ];
+                'errors' => $errors->messages(),
+            ];
 
-        return response()->json($response, 400);
+            return response()->json($response, 400);
+        }
+
+        $phoneNumber = strval($request->input('phoneNumber'));
+        $verificationCode = $request->input('verificationCode');
+
+        $storedVerificationCode = DB::table('phone_number_verifications')
+        ->where('phoneNumber', $phoneNumber)
+        ->orderBy('created_at', 'desc')
+        ->value('verificationCode');
+
+        if (!$storedVerificationCode) {
+            DB::table('phone_number_verifications')->where('phoneNumber', $phoneNumber)->delete();
+            return response()->json(['error' => 'Verification code is missing or expired. Try generating code again.', 'verificationStatus' => false]);
+        }
+
+        if (Hash::check($verificationCode, $storedVerificationCode)) {
+            DB::table('phone_number_verifications')->where('phoneNumber', $phoneNumber)->delete();
+            return response()->json(['message' => 'Verification code is successful', 'verificationStatus' => true]);
+
+
+        } else {
+            DB::table('phone_number_verifications')->where('phoneNumber', $phoneNumber)->delete();
+            return response()->json(['error' => 'Invalid verification code. Try regenerating again.', 'verificationStatus' => false]);
+        }
     }
-
-
-
-
-
-    $phoneNumber = strval($request->input('phoneNumber'));
-    $verificationCode = $request->input('verificationCode');
-
-    $storedVerificationCode = DB::table('phone_number_verifications')
-    ->where('phoneNumber', $phoneNumber)
-    ->orderBy('created_at', 'desc')
-    ->value('verificationCode');
-
-
-
-    if (!$storedVerificationCode) {
-        DB::table('phone_number_verifications')->where('phoneNumber', $phoneNumber)->delete();
-        return response()->json(['verificationCode' => 'Verification code is missing or expired. Try generating code again.', 'verificationStatus' => false]);
-    }
-
-    if (Hash::check($verificationCode, $storedVerificationCode)) {
-        DB::table('phone_number_verifications')->where('phoneNumber', $phoneNumber)->delete();
-        return response()->json(['message' => 'Verification code is successful', 'verificationStatus' => true]);
-
-
-    } else {
-        DB::table('phone_number_verifications')->where('phoneNumber', $phoneNumber)->delete();
-        return response()->json(['verificationCode' => 'Invalid verification code. Try regenerating again.', 'verificationStatus' => false]);
-    }
-}
 
 }

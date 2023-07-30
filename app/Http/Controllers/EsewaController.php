@@ -41,7 +41,4 @@ class EsewaController extends Controller
         // Optionally, you can return a success response or perform additional actions
         return response()->json(['message' => 'Booking done successfully']);
     }
-
-
-
 }

@@ -1,6 +1,19 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
+/**
+ * TButton component for displaying buttons with different styles and colors.
+ *
+ * @param {string} color - The color of the button (default: "indigo").
+ * @param {string} to - The URL to navigate to if the button is a Link.
+ * @param {boolean} circle - Whether the button should be displayed as a circle (default: false).
+ * @param {string} href - The URL to navigate to if the button is an anchor (a tag).
+ * @param {boolean} link - Whether the button should be displayed as a link (default: false).
+ * @param {string} target - The target attribute for the anchor link (default: "_blank").
+ * @param {function} onClick - The click event handler for the button (default: empty function).
+ * @param {ReactNode} children - The content to be displayed inside the button.
+ * @returns {JSX.Element} - The rendered button component.
+ */
 export default function TButton({
   color = "indigo",
   to = "",
@@ -20,6 +33,7 @@ export default function TButton({
     "border-transparent",
   ];
 
+  // If the button is a link
   if (link) {
     classes = [...classes, "transition-colors"];
 
@@ -34,7 +48,9 @@ export default function TButton({
         classes = [...classes, "text-yellow-500", "focus:border-yellow-500"];
         break;
     }
-  } else {
+  }
+  // If the button is not a link (regular button)
+  else {
     classes = [...classes, "text-white", "focus:ring-2", "focus-ring-offset-2"];
 
     switch (color) {
@@ -73,6 +89,7 @@ export default function TButton({
     }
   }
 
+  // If the button should be displayed as a circle
   if (circle) {
     classes = [
       ...classes,
@@ -83,22 +100,27 @@ export default function TButton({
       "rounded-full",
       "text-sm",
     ];
-  } else {
+  }
+  // If the button is not a circle (regular button)
+  else {
     classes = [...classes, "p-0", "py-2", "px-4", "rounded-md"];
   }
 
   return (
     <>
+      {/* Render an anchor (a tag) if href is provided */}
       {href && (
         <a href={href} className={classes.join(" ")} target={target}>
           {children}
         </a>
       )}
+      {/* Render a Link component if "to" is provided */}
       {to && (
         <Link to={to} className={classes.join(" ")}>
           {children}
         </Link>
       )}
+      {/* Render a regular button if neither "to" nor "href" is provided */}
       {!to && !href && (
         <button onClick={onClick} className={classes.join(" ")}>
           {children}

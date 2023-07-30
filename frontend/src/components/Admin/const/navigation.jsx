@@ -27,6 +27,12 @@ export const DASHBOARD_SIDEBAR_LINKS = [
         label:'Bookings',
         path: '/bookings',
         icon: <IoBagHandle/>
+    },
+    {
+        key:'users',
+        label:'Users',
+        path: '/users',
+        icon: <IoPeopleOutline className='text-yellow-600'/>
     }
 ]
 

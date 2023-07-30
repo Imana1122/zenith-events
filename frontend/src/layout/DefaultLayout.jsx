@@ -1,25 +1,18 @@
 import { Fragment, useEffect } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
-import {
-  UserIcon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
-import {GiHamburgerMenu} from "react-icons/gi";
+import { UserIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { GiHamburgerMenu } from "react-icons/gi";
 import { Link, NavLink, Navigate, Outlet } from "react-router-dom";
 import { useStateContext } from "../contents/ContextProvider";
 
 import ZenithEventsLogo from '../assets/zenitheventslogo.svg';
 import axiosClient from "../axios";
 import Footer from "../components/Footer";
-import { admin } from "../admin";
 
 const navigation = [
   { name: "Home", to: "/" },
-
-  { name: "Training", to: "/events" },
-
+  { name: "Training", to: "/training" },
   { name: "Ticket", to: "/ticket" },
-
   { name: "Contact", to: "/contact" },
 ];
 
@@ -28,36 +21,41 @@ function classNames(...classes) {
 }
 
 export default function DefaultLayout() {
-    const { currentUser, userToken, setCurrentUser, setUserToken } = useStateContext();
+  // Get user information from context
+  const { currentUser, userToken, setCurrentUser, setUserToken } = useStateContext();
 
-    useEffect(() => {
-      setCurrentUser(JSON.parse(localStorage.getItem('USER')));
-    }, []); // Run the effect only once when the component mounts
+  useEffect(() => {
+    // Set current user from local storage when the component mounts
+    setCurrentUser(JSON.parse(localStorage.getItem('USER')));
+  }, []);
 
 
+  // If userToken is not available, redirect to login
+  if (!userToken) {
+    return <Navigate to="login" />;
+  }
 
-    if (!userToken) {
-      return <Navigate to="login" />;
-    }
-
+  // Function to handle user logout
   const logout = (ev) => {
     ev.preventDefault();
     axiosClient.post('/logout')
-    .then(res => {
+      .then(res => {
         setCurrentUser({})
         setUserToken(null)
-    })
+      });
   };
 
   return (
     <>
       <div className="min-h-full">
+        {/* Navigation */}
         <Disclosure as="nav" className="bg-white">
           {({ open }) => (
             <>
               <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="flex h-16 items-center justify-between">
                   <div className="flex items-center justify-between">
+                    {/* Logo */}
                     <div className="flex-shrink-0">
                       <img
                         className="h-20 w-20"
@@ -65,32 +63,29 @@ export default function DefaultLayout() {
                         alt="ZenithEvents"
                       />
                     </div>
-
                   </div>
-                  <div className="hidden md:flex md:items-center md:justify-between ">
-                  <div className="hidden md:block">
+                  <div className="hidden md:flex md:items-center md:justify-between">
+                    {/* Desktop navigation */}
+                    <div className="hidden md:block">
                       <div className="ml-10 flex items-baseline space-x-4">
                         {navigation.map((item) => (
-                        <NavLink
-                        key={item.name}
-                        to={item.to}
-                        className={classNames(
-                          location.pathname === item.to
-                            ?'border-indigo-400 text-gray-900 focus:border-indigo-700 '
-                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:text-gray-700 focus:border-gray-300 ',
-                            'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out focus:outline-none '
-                        )}
-
-                      >
-                        {item.name}
-                      </NavLink>
-
-
+                          <NavLink
+                            key={item.name}
+                            to={item.to}
+                            className={classNames(
+                              location.pathname === item.to
+                                ? 'border-indigo-400 text-gray-900 focus:border-indigo-700 '
+                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:text-gray-700 focus:border-gray-300 ',
+                              'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out focus:outline-none'
+                            )}
+                          >
+                            {item.name}
+                          </NavLink>
                         ))}
                       </div>
                     </div>
+                    {/* User Profile Dropdown */}
                     <div className="ml-4 flex items-center md:ml-6">
-                      {/* Profile dropdown */}
                       <Menu as="div" className="relative ml-3">
                         <div>
                           <Menu.Button className="flex max-w-xs items-center rounded-full bg-purple-900 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
@@ -109,13 +104,13 @@ export default function DefaultLayout() {
                         >
                           <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                             <Menu.Item>
-                                <p className="block px-4 py-2 text-xs text-purple-900"> {currentUser.name}<br/>{currentUser.email}</p>
+                              {/* Display user name and email */}
+                              <p className="block px-4 py-2 text-xs text-purple-900"> {currentUser.name}<br />{currentUser.email}</p>
                             </Menu.Item>
-
                             <Menu.Item>
+                              {/* Link to user profile */}
                               <a
                                 href={`/profile?name=${currentUser.name}&email=${currentUser.email}&phoneNumber=${currentUser.phoneNumber}`}
-
                                 className={
                                   "block px-4 py-2 text-sm text-slate-700"
                                 }
@@ -124,9 +119,9 @@ export default function DefaultLayout() {
                               </a>
                             </Menu.Item>
                             <Menu.Item>
+                              {/* Link to user bookings */}
                               <a
                                 href={`/userBookings?name=${currentUser.name}&email=${currentUser.email}&phoneNumber=${currentUser.phoneNumber}`}
-
                                 className={
                                   "block px-4 py-2 text-sm text-slate-700"
                                 }
@@ -134,8 +129,8 @@ export default function DefaultLayout() {
                                 Bookings
                               </a>
                             </Menu.Item>
-
                             <Menu.Item>
+                              {/* Sign out option */}
                               <a
                                 href="#"
                                 onClick={(ev) => logout(ev)}
@@ -146,8 +141,6 @@ export default function DefaultLayout() {
                                 Sign out
                               </a>
                             </Menu.Item>
-
-
                           </Menu.Items>
                         </Transition>
                       </Menu>
@@ -173,24 +166,22 @@ export default function DefaultLayout() {
                 </div>
               </div>
 
+              {/* Mobile Navigation */}
               <Disclosure.Panel className="md:hidden">
                 <div className="space-y-1 px-2 pb-3 pt-2 sm:px-3">
                   {navigation.map((item) => (
-                 <NavLink
-                 key={item.name}
-                 to={item.to}
-                 className={classNames(
-                    location.pathname === item.to
-                      ?'border-indigo-400 text-gray-900 focus:border-indigo-700 '
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:text-gray-700 focus:border-gray-300 ',
-                      'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out focus:outline-none mr-3 '
-                  )}
-               >
-                 {item.name}
-               </NavLink>
-
-
-
+                    <NavLink
+                      key={item.name}
+                      to={item.to}
+                      className={classNames(
+                        location.pathname === item.to
+                          ? 'border-indigo-400 text-gray-900 focus:border-indigo-700 '
+                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:text-gray-700 focus:border-gray-300 ',
+                        'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out focus:outline-none mr-3'
+                      )}
+                      >
+                      {item.name}
+                    </NavLink>
                   ))}
                 </div>
                 <div className="border-t border-b border-gray-700 pb-3 pt-4">
@@ -199,6 +190,7 @@ export default function DefaultLayout() {
                       <UserIcon className="w-8 h-8 bg-purple-900 text-white p-2 rounded-full" />
                     </div>
                     <div className="ml-3">
+                      {/* Display user name and email */}
                       <div className="text-base font-medium leading-none text-slate-700">
                         {currentUser.name}
                       </div>
@@ -208,13 +200,15 @@ export default function DefaultLayout() {
                     </div>
                   </div>
                   <div className="mt-3 space-y-1 px-2">
-                  <Disclosure.Button
+                    {/* Link to user profile */}
+                    <Disclosure.Button
                       as="a"
                       href={`/profile?name=${currentUser.name}&email=${currentUser.email}&phoneNumber=${currentUser.phoneNumber}`}
                       className="block rounded-md px-3 py-2 text-base font-medium text-slate-700 hover:bg-purple-900 hover:text-white"
                     >
                       Profile
                     </Disclosure.Button>
+                    {/* Link to user bookings */}
                     <Disclosure.Button
                       as="a"
                       href={`/userBookings?name=${currentUser.name}&email=${currentUser.email}&phoneNumber=${currentUser.phoneNumber}`}
@@ -222,8 +216,7 @@ export default function DefaultLayout() {
                     >
                       Bookings
                     </Disclosure.Button>
-
-
+                    {/* Sign out option */}
                     <Disclosure.Button
                       as="a"
                       href="#"
@@ -232,19 +225,18 @@ export default function DefaultLayout() {
                     >
                       Signout
                     </Disclosure.Button>
-
-
-
                   </div>
                 </div>
               </Disclosure.Panel>
             </>
           )}
         </Disclosure>
+        {/* Render the child routes/components */}
         <Outlet />
+        {/* Render the Footer component */}
         <Footer />
-
       </div>
     </>
   );
 }
+

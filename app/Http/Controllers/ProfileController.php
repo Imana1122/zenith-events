@@ -12,8 +12,6 @@ use Illuminate\Validation\Rules\Password;
 
 class ProfileController extends Controller
 {
-
-
     /**
      * Update the user's profile information.
      */
@@ -42,57 +40,54 @@ class ProfileController extends Controller
             'user' => $user,
             'message' => 'success',
         ]);
+    }
 
-
-
+    public function updatePassword(Request $request){
+        if (!Auth::check()) {
+            return response(['error' => 'Hello Imana.'], 401);
         }
 
-        public function updatePassword(Request $request){
-            if (!Auth::check()) {
-                return response(['error' => 'Hello Imana.'], 401);
-            }
+        // Ensure the user is authenticated before proceeding
+        /** @var User $user */
+        $user = Auth::user();
 
-            // Ensure the user is authenticated before proceeding
-            /** @var User $user */
-            $user = Auth::user();
-
-            if (!$user) {
-                return response()->json(['error' => 'User not authenticated.'], 401);
-            }
-            $validator = Validator::make($request->all(), [
-                'currentPassword' => [
-                    'required',
-                    'string',
-                    function ($attribute, $value, $fail) use ($user) {
-                        if (!\Hash::check($value, $user->password)) {
-                            $fail('The current password is incorrect.');
-                        }
-                    },
-                ],
-                'password' => [
-                    'required',
-                    'confirmed',
-                    Password::min(8)->mixedCase()->numbers()->symbols(),
-                ],
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json(['errors' => $validator->errors()], 422);
-            }
-
-
-            $password = $request->input('password');
-
-
-            $user->update([
-                'password' => $password,
-            ]);
-
-            return response()->json([
-                'newPassword' => $password,
-                'message' => 'Password updated successfully.',
-            ]);
+        if (!$user) {
+            return response()->json(['error' => 'User not authenticated.'], 401);
         }
+        $validator = Validator::make($request->all(), [
+            'currentPassword' => [
+                'required',
+                'string',
+                function ($attribute, $value, $fail) use ($user) {
+                    if (!\Hash::check($value, $user->password)) {
+                        $fail('The current password is incorrect.');
+                    }
+                },
+            ],
+            'password' => [
+                'required',
+                'confirmed',
+                Password::min(8)->mixedCase()->numbers()->symbols(),
+            ],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+
+        $password = $request->input('password');
+
+
+        $user->update([
+            'password' => $password,
+        ]);
+
+        return response()->json([
+            'newPassword' => $password,
+            'message' => 'Password updated successfully.',
+        ]);
+    }
 
     /**
      * Delete the user's account.

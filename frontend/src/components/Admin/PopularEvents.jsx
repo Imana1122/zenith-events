@@ -6,11 +6,11 @@ const PopularEvents = () => {
   const [popularEvents, setPopularEvents] = useState([]);
 
   useEffect(() => {
+    // Fetch popular events data from the server
     axiosClient
       .get('/getMostBookedEvents') // Replace with the correct API endpoint
       .then((response) => {
         setPopularEvents(response.data.popularEvents);
-
       })
       .catch((error) => {
         console.error(error);
@@ -22,6 +22,7 @@ const PopularEvents = () => {
       <strong className='text-gray-700 font-medium'>Popular Events</strong>
       <div className='mt-4 flex flex-col gap-3'>
         {popularEvents.length > 0 ? (
+          // If there are popular events available, map through the array and display them
           popularEvents.map((event) => (
             <Link to={`/events/${event.eventId}`} className='flex hover:no-underline cursor-pointer' key={event.id}>
               <div className='w-10 h-10 minw-10 bg-gray-200 rounded-sm'>
@@ -37,6 +38,7 @@ const PopularEvents = () => {
             </Link>
           ))
         ) : (
+          // If there are no popular events available, display a message
           <div>No popular events available</div>
         )}
       </div>
